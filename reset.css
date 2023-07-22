@@ -1,0 +1,105 @@
+/* Reset default styles for HTML elements */
+html,
+body,
+div,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+pre,
+a,
+em,
+strong,
+small,
+sub,
+sup,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section,
+summary {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* Make sure to define block-level elements' display property */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+/* Remove list styles (bullet points) */
+ul {
+  list-style: none;
+}
+
+/* Remove list-style and left margin for nested lists */
+li {
+  list-style: none;
+  margin-left: 0;
+}
+
+/* Reset anchor text-decoration */
+a {
+  text-decoration: none;
+}
+
+/* Set default font family and size */
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+/* Add box-sizing: border-box to all elements */
+* {
+  box-sizing: border-box;
+}
+
+/* Add more reset styles as needed */
