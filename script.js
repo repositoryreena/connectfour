@@ -1,3 +1,9 @@
+function playSound(soundId) {
+    const sound = document.getElementById(soundId);
+    sound.currentTime = 0;
+    sound.play();
+}
+
 function startGame() {
     const ROWS = 6;
     const COLS = 7;
@@ -107,6 +113,11 @@ function startGame() {
                 setTimeout(() => {
                     if (rowIndex < lastAvailableCellIndex) {
                         targetCell.style.backgroundColor = ""; // Hide the piece after showDuration
+                    } else {
+                        setTimeout(() => {
+                            targetCell.style.backgroundColor = currentPlayer; // Show the piece in the final position
+                            playSound("clinkSound"); // Play clinking sound effect when the piece lands at the bottom
+                        }, showDuration);
                     }
                     rowIndex++;
                     showNextPiece();
@@ -117,6 +128,7 @@ function startGame() {
                     if (currentPlayer === PLAYER2) {
                         setTimeout(computerMove, 500);
                     }
+                    playSound("moveSound"); // Play move sound effect
                 }, delay);
             }
         }
@@ -134,6 +146,7 @@ function startGame() {
     resetButton.addEventListener("click", () => {
         resetBoard();
         startGame(); // Reinitialize the game board and event listener
+        playSound("resetSound"); // Play reset sound effect
     });
 }
 
