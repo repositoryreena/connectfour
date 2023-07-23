@@ -40,6 +40,9 @@ button {
     position: relative;
 }
 
+/* ... Existing styles ... */
+
+/* Add the animation styles for the falling pieces */
 .falling-piece {
     position: absolute;
     width: 100%;
@@ -57,3 +60,5 @@ button {
 .falling-piece.yellow {
     background-color: yellow;
 }
+
+

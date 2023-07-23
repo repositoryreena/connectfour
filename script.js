@@ -70,11 +70,13 @@ function handleClick(event) {
     if (isGameOver) return;
 
     const cell = event.target;
-    const row = parseInt(cell.dataset.row);
     const col = parseInt(cell.dataset.col);
 
+    if (isColumnFull(col)) return; // Column is full, do nothing
+
+    const cellsInColumn = document.querySelectorAll(`[data-col="${col}"]`);
     for (let i = ROWS - 1; i >= 0; i--) {
-        const targetCell = document.querySelector(`[data-row="${i}"][data-col="${col}"]`);
+        const targetCell = cellsInColumn[i];
         if (targetCell.style.backgroundColor === "") {
             targetCell.style.backgroundColor = currentPlayer;
 
@@ -85,13 +87,17 @@ function handleClick(event) {
                 }, 100);
                 return;
             }
-
-            currentPlayer = PLAYER2;
-            setTimeout(computerMove, 500); // Introduce a small delay before the computer makes its move.
-            return;
         }
     }
+
+    currentPlayer = currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
+    if (currentPlayer === PLAYER2) {
+        setTimeout(computerMove, 500);
+    }
 }
+
+
+
 
 function resetGame() {
     resetBoard();
