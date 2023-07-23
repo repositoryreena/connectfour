@@ -75,26 +75,40 @@ function handleClick(event) {
     if (isColumnFull(col)) return; // Column is full, do nothing
 
     const cellsInColumn = document.querySelectorAll(`[data-col="${col}"]`);
-    for (let i = ROWS - 1; i >= 0; i--) {
+    const delay = 200; // Milliseconds between showing each piece
+    let showDelay = 0;
+
+    for (let i = 0; i < ROWS; i++) {
         const targetCell = cellsInColumn[i];
         if (targetCell.style.backgroundColor === "") {
-            targetCell.style.backgroundColor = currentPlayer;
+            setTimeout(() => {
+                targetCell.style.backgroundColor = currentPlayer;
 
-            if (checkWin(i, col, currentPlayer)) {
-                isGameOver = true;
-                setTimeout(() => {
-                    alert(`Player ${currentPlayer === PLAYER1 ? "1" : "2"} wins!`);
-                }, 100);
-                return;
-            }
+                if (checkWin(i, col, currentPlayer)) {
+                    isGameOver = true;
+                    setTimeout(() => {
+                        alert(`Player ${currentPlayer === PLAYER1 ? "1" : "2"} wins!`);
+                    }, 100);
+                    return;
+                }
+            }, showDelay);
+
+            showDelay += delay;
         }
     }
 
-    currentPlayer = currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
-    if (currentPlayer === PLAYER2) {
-        setTimeout(computerMove, 500);
-    }
+    setTimeout(() => {
+        currentPlayer = currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
+        if (currentPlayer === PLAYER2) {
+            setTimeout(computerMove, 500);
+        }
+    }, showDelay);
 }
+
+
+
+
+
 
 
 
