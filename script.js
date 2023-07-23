@@ -76,34 +76,56 @@ function handleClick(event) {
 
     const cellsInColumn = document.querySelectorAll(`[data-col="${col}"]`);
     const delay = 200; // Milliseconds between showing each piece
-    let showDelay = 0;
+    const showDuration = 1000; // Milliseconds to keep the piece shown before hiding
+    let lastAvailableCellIndex = -1;
 
-    for (let i = 0; i < ROWS; i++) {
-        const targetCell = cellsInColumn[i];
-        if (targetCell.style.backgroundColor === "") {
-            setTimeout(() => {
-                targetCell.style.backgroundColor = currentPlayer;
-
-                if (checkWin(i, col, currentPlayer)) {
-                    isGameOver = true;
-                    setTimeout(() => {
-                        alert(`Player ${currentPlayer === PLAYER1 ? "1" : "2"} wins!`);
-                    }, 100);
-                    return;
-                }
-            }, showDelay);
-
-            showDelay += delay;
+    for (let i = ROWS - 1; i >= 0; i--) {
+        if (cellsInColumn[i].style.backgroundColor === "") {
+            lastAvailableCellIndex = i;
+            break;
         }
     }
 
-    setTimeout(() => {
-        currentPlayer = currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
-        if (currentPlayer === PLAYER2) {
-            setTimeout(computerMove, 500);
+    if (lastAvailableCellIndex === -1) return; // Column is full, do nothing
+
+    let rowIndex = 0;
+
+    function showNextPiece() {
+        const targetCell = cellsInColumn[rowIndex];
+        if (targetCell && targetCell.style.backgroundColor === "") {
+            targetCell.style.backgroundColor = currentPlayer;
+
+            if (checkWin(rowIndex, col, currentPlayer)) {
+                isGameOver = true;
+                setTimeout(() => {
+                    alert(`Player ${currentPlayer === PLAYER1 ? "1" : "2"} wins!`);
+                }, 100);
+                return;
+            }
+
+            setTimeout(() => {
+                if (rowIndex < lastAvailableCellIndex) {
+                    targetCell.style.backgroundColor = ""; // Hide the piece after showDuration
+                }
+                rowIndex++;
+                showNextPiece();
+            }, showDuration);
+        } else {
+            setTimeout(() => {
+                currentPlayer = currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
+                if (currentPlayer === PLAYER2) {
+                    setTimeout(computerMove, 500);
+                }
+            }, delay);
         }
-    }, showDelay);
+    }
+
+    showNextPiece();
 }
+
+
+
+
 
 
 
