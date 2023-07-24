@@ -13,6 +13,7 @@ function startGame() {
 
     let currentPlayer = PLAYER1;
     let isGameOver = false;
+    let isPlayerTurn = true; // Flag to track if it's the player's turn
 
     const board = document.getElementById("board");
 
@@ -33,11 +34,54 @@ function startGame() {
         cells.forEach((cell) => (cell.style.backgroundColor = "#ffffff"));
         currentPlayer = PLAYER1;
         isGameOver = false;
+
+        // Remove the click event listener during the game over state
+        board.removeEventListener("click", handleClick);
+
+        // Re-add the click event listener for starting a new game
+        board.addEventListener("click", handleClick);
+
+        startGame(); // Start a new game
     }
 
     function checkWin(row, col, playerColor) {
-        // Implementation of checkWin remains the same as provided in the previous response.
-        // Please use the same checkWin function from the previous response.
+        function checkDirection(direction) {
+            let count = 1;
+            let newRow = row + direction[0];
+            let newCol = col + direction[1];
+
+            while (
+                newRow >= 0 &&
+                newRow < ROWS &&
+                newCol >= 0 &&
+                newCol < COLS &&
+                board.querySelector(`[data-row="${newRow}"][data-col="${newCol}"]`).style.backgroundColor === playerColor
+            ) {
+                count++;
+                newRow += direction[0];
+                newCol += direction[1];
+            }
+
+            return count;
+        }
+
+        const directions = [
+            [1, 0], // Vertical
+            [0, 1], // Horizontal
+            [1, 1], // Diagonal /
+            [-1, 1], // Diagonal \
+        ];
+
+        for (const direction of directions) {
+            const count1 = checkDirection(direction);
+            const count2 = checkDirection([-direction[0], -direction[1]]); // Opposite direction
+
+            if (count1 + count2 - 1 >= 4) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function isColumnFull(col) {
@@ -55,7 +99,7 @@ function startGame() {
         } while (isColumnFull(randomCol));
 
         for (let i = ROWS - 1; i >= 0; i--) {
-            const targetCell = document.querySelector(`[data-row="${i}"][data-col="${randomCol}"]`);
+            const targetCell = board.querySelector(`[data-row="${i}"][data-col="${randomCol}"]`);
             if (targetCell.style.backgroundColor === "") {
                 targetCell.style.backgroundColor = currentPlayer;
 
@@ -63,18 +107,21 @@ function startGame() {
                     isGameOver = true;
                     setTimeout(() => {
                         alert(`Player ${currentPlayer === PLAYER1 ? "1" : "2"} wins!`);
+                        board.removeEventListener("click", handleClick); // Remove the event listener after the game ends
                     }, 100);
                     return;
                 }
 
                 currentPlayer = PLAYER1;
+                isPlayerTurn = true; // Enable the player's turn after the computer moves
+                board.addEventListener("click", handleClick); // Re-add the click event listener for player's next move
                 return;
             }
         }
     }
 
     function handleClick(event) {
-        if (isGameOver) return;
+        if (isGameOver || !isPlayerTurn) return;
 
         const cell = event.target;
         const col = parseInt(cell.dataset.col);
@@ -106,6 +153,7 @@ function startGame() {
                     isGameOver = true;
                     setTimeout(() => {
                         alert(`Player ${currentPlayer === PLAYER1 ? "1" : "2"} wins!`);
+                        board.removeEventListener("click", handleClick); // Remove the event listener after the game ends
                     }, 100);
                     return;
                 }
@@ -117,23 +165,30 @@ function startGame() {
                         setTimeout(() => {
                             targetCell.style.backgroundColor = currentPlayer; // Show the piece in the final position
                             playSound("clinkSound"); // Play clinking sound effect when the piece lands at the bottom
+                            currentPlayer = currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
+                            if (currentPlayer === PLAYER2) {
+                                isPlayerTurn = false; // Disable the player's turn while the computer moves
+                                setTimeout(computerMove, 500); // Make the computer move after a delay
+                            } else {
+                                isPlayerTurn = true; // Enable the player's turn
+                                board.addEventListener("click", handleClick); // Re-add the click event listener for player's next move
+                            }
                         }, showDuration);
                     }
                     rowIndex++;
                     showNextPiece();
                 }, showDuration);
-            } else {
-                setTimeout(() => {
-                    currentPlayer = currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
-                    if (currentPlayer === PLAYER2) {
-                        setTimeout(computerMove, 500);
-                    }
-                    playSound("moveSound"); // Play move sound effect
-                }, delay);
             }
         }
 
+        isPlayerTurn = false; // Disable player's turn while the piece is falling
+        board.removeEventListener("click", handleClick); // Remove the click event listener to prevent further player moves during the animation
         showNextPiece();
+    }
+
+    function waitForComputerMove() {
+        isPlayerTurn = false;
+        setTimeout(computerMove, 500); // Make the computer move after a delay
     }
 
     // Clear the board and attach the event listener
@@ -144,8 +199,8 @@ function startGame() {
     // Add an event listener to the "Reset Game" button
     const resetButton = document.getElementById("resetButton");
     resetButton.addEventListener("click", () => {
+        isPlayerTurn = true; // Enable the player's turn when resetting the game
         resetBoard();
-        startGame(); // Reinitialize the game board and event listener
         playSound("resetSound"); // Play reset sound effect
     });
 }
